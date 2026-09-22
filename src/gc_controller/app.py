@@ -2088,7 +2088,7 @@ class _BleHeadlessManager:
                 cmd,
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
-                stderr=subprocess.DEVNULL,
+                stderr=sys.stdout,
             )
         else:
             if frozen:
@@ -2102,7 +2102,7 @@ class _BleHeadlessManager:
                 cmd,
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
-                stderr=subprocess.DEVNULL,
+                stderr=sys.stdout,
             )
 
     def send_cmd(self, cmd: dict):
