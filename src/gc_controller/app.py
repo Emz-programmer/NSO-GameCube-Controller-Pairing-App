@@ -591,10 +591,12 @@ class GCControllerEnabler:
             return False
 
         # Open HCI adapter
+        logger.debug("Sending open command")
         self._send_ble_cmd({"cmd": "open"})
         result = self._wait_ble_init(timeout=15)
         if not result or result.get('e') == 'error':
             msg = result.get('msg', 'Unknown error') if result else 'Timeout'
+            logger.error("BLE_ERROR: %s", result)
             self._cleanup_ble()
             self._messagebox.showerror(
                 "BLE Error",

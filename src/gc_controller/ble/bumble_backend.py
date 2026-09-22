@@ -6,6 +6,7 @@ Bypasses BlueZ entirely for full control over SMP key distribution.
 """
 
 import asyncio
+import logging
 import queue
 from typing import Callable, Optional
 
@@ -17,12 +18,18 @@ from bumble import smp  # noqa: F401
 
 from .sw2_protocol import sw2_init, translate_ble_to_usb
 
+_logger = logging.getLogger(__name__)
+
 # Known Nintendo BLE MAC OUI prefixes (first 3 octets)
 _NINTENDO_OUIS = (
     '3C:A9:AB', '98:B6:E9', '7C:BB:8A', '58:2F:40',
     'D8:6B:F7', '04:03:D6', 'A4:C0:E1', '40:F4:07',
 )
 
+def _log(msg: str):
+    """Debug log to stderr (visible in terminal, not in IPC pipe)."""
+    _logger.debug(msg)
+    print(f"[bumble] {msg}", file=sys.stderr, flush=True)
 
 class BumbleBackend:
     """Manages HCI transport and Bumble Device for BLE connections."""
@@ -42,10 +49,10 @@ class BumbleBackend:
         """Open the HCI transport and power on the Bumble device."""
         self._hci_index = hci_index
         transport_name = f"hci-socket:{hci_index}"
-
+        _log(f" Opening HCI transport: {transport_name}")
         self._transport = await open_transport(transport_name)
         hci_source, hci_sink = self._transport
-
+        _log("setup device.with_hci")
         self._device = Device.with_hci(
             "Bumble-GC",
             Address("F0:F1:F2:F3:F4:F5"),
@@ -54,6 +61,7 @@ class BumbleBackend:
         )
 
         # Configure SMP for Legacy "Just Works" with exact BlueRetro key distribution
+        _log("Configure pairing settings")
         self._device.pairing_config_factory = lambda connection: PairingConfig(
             sc=False,
             mitm=False,
@@ -68,7 +76,7 @@ class BumbleBackend:
                 ),
             ),
         )
-
+        _log("Powering on virtual device")
         await self._device.power_on()
 
     async def scan_and_connect(
