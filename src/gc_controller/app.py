@@ -2102,8 +2102,10 @@ class _BleHeadlessManager:
                 cmd,
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
-                stderr=sys.stderr,
+                stderr=subprocess.STDOUT,
             )
+            for line in process.stdout:
+                sys.stdout.write(line)
 
     def send_cmd(self, cmd: dict):
         """Send a JSON-line command to the BLE subprocess."""
