@@ -43,7 +43,6 @@ from .controller_constants import DEFAULT_CALIBRATION, MAX_SLOTS
 from .i18n import t
 from .settings_manager import SettingsManager
 
-
 def setup_logging(debug: bool = False):
     """Configure logging for the application.
 
@@ -378,7 +377,7 @@ class GCControllerEnabler:
                 cmd,
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
-                stderr=subprocess.DEVNULL,
+                stderr=sys.stderr, 
             )
         else:
             if frozen:
@@ -392,7 +391,7 @@ class GCControllerEnabler:
                 cmd,
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
-                stderr=subprocess.DEVNULL,
+                stderr=sys.stderr,
             )
 
         self._ble_reader_thread = threading.Thread(

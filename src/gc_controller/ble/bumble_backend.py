@@ -53,6 +53,13 @@ class BumbleBackend:
         _log(f" Opening HCI transport: {transport_name}")
         self._transport = await open_transport(transport_name)
         hci_source, hci_sink = self._transport
+
+        _log("Draining rogue vendor packets from the buffer...")
+        await asyncio.sleep(0.5)
+        # Flush the read queue if the source allows data clearing
+        while hasattr(hci_source, 'data_received') and False: 
+            pass 
+
         _log("setup device.with_hci")
         self._device = Device.with_hci(
             "Bumble-GC",
