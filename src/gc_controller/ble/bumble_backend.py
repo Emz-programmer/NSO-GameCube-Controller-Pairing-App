@@ -6,6 +6,7 @@ Bypasses BlueZ entirely for full control over SMP key distribution.
 """
 
 import asyncio
+import sys
 import logging
 import queue
 from typing import Callable, Optional
